@@ -366,7 +366,7 @@ static int __cpuinit msm_cpufreq_init(struct cpufreq_policy *policy)
 	policy->min = CONFIG_MSM_CPU_FREQ_MIN;
 #endif
 #ifdef CONFIG_CPU_OVERCLOCK
-	policy->max = OC_FREQ_MAX;
+	policy->max = 1188000;
 #else
  	policy->max = CONFIG_MSM_CPU_FREQ_MAX;
 #endif
