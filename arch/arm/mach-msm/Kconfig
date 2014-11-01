@@ -2005,7 +2005,14 @@ config CPU_OVERCLOCK
 	bool "Enable CPU Overclocking option"
 	default n
 	help
-	  Krait overclocking up to 1.45 GHz
+	  Krait overclocking up to 1.7 GHz
+
+config CPU_OVERCLOCK_MORE
+	bool "Enable max overclocking"
+	default n
+	help
+	  Increase max overclock for msm8930 based devices up
+	  to 1.7 GHz
 
 config CPU_UNDERCLOCK
 	bool "Enable extra low CPU clocks"
