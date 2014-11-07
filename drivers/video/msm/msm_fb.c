@@ -1973,6 +1973,11 @@ static int msm_fb_release(struct fb_info *info, int user)
         return msm_fb_release_all(info, false);
 }
 
+static int msm_fb_release(struct fb_info *info, int user)
+{
+        return msm_fb_release_all(info, false);
+}
+
 void msm_fb_wait_for_fence(struct msm_fb_data_type *mfd)
 {
 	int i, ret = 0;
