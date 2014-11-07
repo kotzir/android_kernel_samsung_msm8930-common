@@ -114,7 +114,7 @@
 #endif
 
 #ifdef CONFIG_NFC_PN547
-#include <linux/pn544.h>
+#include <linux/pn547.h>
 #endif
 
 #ifdef CONFIG_MFD_MAX77693
@@ -405,18 +405,20 @@ static struct platform_device pn547_i2c_gpio_device = {
 	},
 };
 
-static struct pn544_i2c_platform_data pn547_pdata = {
+static struct pn547_i2c_platform_data pn547_pdata = {
 	.conf_gpio = pn547_conf_gpio,
 	.irq_gpio = GPIO_NFC_IRQ,
 	.ven_gpio = GPIO_NFC_EN,
 	.firm_gpio = GPIO_NFC_FIRMWARE,
+#ifdef CONFIG_NFC_PN547_CLOCK_REQUEST
 	.clk_req_gpio = GPIO_NFC_CLK_REQ,
 	.clk_req_irq = MSM_GPIO_TO_INT(GPIO_NFC_CLK_REQ),
+#endif
 };
 
 static struct i2c_board_info pn547_info[] __initdata = {
 	{
-		I2C_BOARD_INFO("pn544", 0x2b),
+		I2C_BOARD_INFO("pn547", 0x2b),
 		.irq = MSM_GPIO_TO_INT(GPIO_NFC_IRQ),
 		.platform_data = &pn547_pdata,
 	},
@@ -560,6 +562,8 @@ static void tsu6721_callback(enum cable_type_t cable_type, int attached)
 	case CABLE_TYPE_OTG:
 		pr_info("%s OTG is %s\n",
 			__func__, attached ? "attached" : "detached");
+		if (attached)
+		sec_otg_set_id_state(attached);
 		return;
 	case CABLE_TYPE_AUDIO_DOCK:
 		pr_info("%s Audiodock is %s\n",
@@ -2846,7 +2850,7 @@ static int hsusb_phy_init_seq[] = {
 #define MSM_MPM_PIN_USB1_OTGSESSVLD	40
 
 static struct msm_otg_platform_data msm_otg_pdata = {
-	.mode			= USB_PERIPHERAL,
+	.mode			= USB_OTG,
 	.otg_control		= OTG_PMIC_CONTROL,
 	.phy_type		= SNPS_28NM_INTEGRATED_PHY,
 	.pmic_id_irq		= PM8038_USB_ID_IN_IRQ(PM8038_IRQ_BASE),
@@ -2859,6 +2863,7 @@ static struct msm_otg_platform_data msm_otg_pdata = {
 #endif
 	.mpm_otgsessvld_int	= MSM_MPM_PIN_USB1_OTGSESSVLD,
 };
+#include "board-8930-otg.c"
 #endif
 
 #define PID_MAGIC_ID		0x71432909
@@ -4704,6 +4709,9 @@ void __init msm8930_cane_init(void)
 #else
 	i2c_register_board_info(MSM_8930_GSBI3_QUP_I2C_BUS_ID, zinitix_i2c_info,
 		ARRAY_SIZE(zinitix_i2c_info));
+#endif
+#ifdef CONFIG_USB_HOST_NOTIFY
+msm_otg_power_init(GPIO_OTG_TEST, 0);
 #endif
 #endif
 #if defined(CONFIG_TOUCHSCREEN_CYPRESS_TMA46X)
